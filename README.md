@@ -1,4 +1,4 @@
-#Single or multi selector using react(with <strong>Typescript</strong>)
+#Single or multi selector using React (with <strong>Typescript</strong>)
 
 ###Sample:
 <img src="https://github.com/alaminstore/multi-select-react/blob/main/screenshots/skill-picker.png?raw=true" alt="skill-picker.png">
