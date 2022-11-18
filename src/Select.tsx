@@ -2,17 +2,13 @@ import { useEffect, useState } from "react";
 import styles from "./styles/select.module.css";
 import { SelectProps, selectOption } from "./types/SelectProps";
 
-// type selectOption = {
-//   label: string;
-//   value: any;
-// };
-// type SelectProps = {
-//   options: selectOption[];
-//   value?: selectOption;
-//   onChange: (value: selectOption | undefined) => void;
-// };
 
-export default function Select({ value, onChange, options }: SelectProps) {
+export default function Select({
+  multiple,
+  value,
+  onChange,
+  options,
+}: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [highlighedIndex, setHighlighedIndex] = useState(0);
 
@@ -21,14 +17,22 @@ export default function Select({ value, onChange, options }: SelectProps) {
   }, [isOpen]);
 
   function clearOptions() {
-    onChange(undefined);
+    multiple ? onChange([]) : onChange(undefined);
   }
   function selectOption(option: selectOption) {
-    if (option !== value) onChange(option);
+    if (multiple) {
+      if (value.includes(option)) {
+        onChange(value.filter((o) => o !== option)); // if the selected option onlready selected before then going to remove using filter.
+      } else {
+        onChange([...value, option]); // add the new option in value[].
+      }
+    } else {
+      if (option !== value) onChange(option);
+    }
   }
 
   function isOptionSelected(option: selectOption) {
-    return option === value;
+    return multiple ? value.includes(option) : option === value; // if multiple selected enable then multiple or for only single selecton bool value return
   }
 
   return (
@@ -38,7 +42,23 @@ export default function Select({ value, onChange, options }: SelectProps) {
       tabIndex={0}
       className={styles.container}
     >
-      <div className={styles.value}>{value?.label}</div>
+      <div className={styles.value}>
+        {multiple
+          ? value.map((singleValue) => (
+              <button
+                key={singleValue.value}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  selectOption(singleValue);
+                }}
+                className={styles["option-badge"]}
+              >
+                {singleValue.label}{" "}
+                <span className={styles["remove-btn"]}>&times;</span>
+              </button>
+            ))
+          : value?.label}
+      </div>
       <button
         onClick={(e) => {
           e.stopPropagation();
